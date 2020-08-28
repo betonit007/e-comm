@@ -7,8 +7,9 @@ const Header = () => {
     return (
         <header className="header">
             <div className="wrap">
+                Fly Fitness
                 <div className="logo">
-                    <img src={Logo} alt="FlyDev Logo"/>
+                  <img src={Logo} alt="FlyDev Logo"/>
                 </div>
             </div>
         </header>
