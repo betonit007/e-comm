@@ -28,6 +28,11 @@
             right: 10px;
             transform: translateY(-50%);
 
+            .logout {
+                text-transform: uppercase;
+                cursor: pointer;
+            }
+
             ul {
                 display: flex;
             }

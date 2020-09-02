@@ -2,10 +2,10 @@ import React from 'react'
 import Header from '../components/Header'
 import Footer from '../components/footer'
 
-const HomepageLayout = ({children}) => {
+const HomepageLayout = ({children, currentUser}) => {
     return (
         <div className='fullHeight'>
-            <Header />
+            <Header currentUser={currentUser}/>
             {children}
             <Footer />
         </div>

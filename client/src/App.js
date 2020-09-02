@@ -1,56 +1,65 @@
-import React, {useState, useEffect} from 'react'
-import { auth } from './firebase/config'
-import { Switch, Route } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { auth, handleUserProfile } from './firebase/config'
+import { Switch, Route, Redirect } from 'react-router-dom'
 //layouts
 import MainLayout from './layouts/MainLayout'
 import HomepageLayout from './layouts/HomepageLayout'
 import Login from './pages/Login/Login'
 import Homepage from './pages/Homepage'
 import Registration from './pages/Registration'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import './default.scss'
 
 const App = () => {
-  const [authState, setAuthState] = useState({user: null});
+  const [authState, setAuthState] = useState({ currentUser: null });
+  const { currentUser } = authState
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-        if (user) {
-            const idTokenResult = await auth.currentUser.getIdTokenResult()
-
-           setAuthState({
-             user,
-             token: idTokenResult
-           })
-        } else {
+    const unsubscribe = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await handleUserProfile(userAuth)
+        userRef.onSnapshot(snapshot => {
           setAuthState({
-            user: null
+            currentUser: {
+              id: snapshot.id,
+              ...snapshot.data()
+            }
           })
-        }
+        })
+      }
+      setAuthState({ currentUser: null })
     })
     //clean up
     return () => unsubscribe()
-}, [])
+  }, [])
 
   return (
     <div className='App'>
-        <Switch>
-          <Route exact path='/' render={() => (
-            <HomepageLayout>
-              <Homepage />
-            </HomepageLayout>
-          )}/>
-          <Route exact path='/registration' render={() => (
-            <MainLayout>
-              <Registration />
-            </MainLayout>
-          )}/><Route exact path='/login' render={() => (
-            <MainLayout>
-              <Login 
-                authState={authState}
-              />
-            </MainLayout>
-          )}/>
-        </Switch>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+      />
+      <Switch>
+        <Route exact path='/' render={() => (
+          <HomepageLayout currentUser={currentUser}>
+            <Homepage />
+          </HomepageLayout>
+        )} />
+        <Route exact path='/registration' render={() => (!currentUser ?
+          <MainLayout>
+            <Registration />
+          </MainLayout>
+          :
+          <Redirect to="/" />
+        )} /><Route exact path='/login' render={() => (!currentUser ?
+          <MainLayout>
+            <Login />
+          </MainLayout>
+          :
+          <Redirect to="/" />
+        )} />
+      </Switch>
     </div>
   )
 }
