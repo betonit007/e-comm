@@ -5,6 +5,7 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import HomepageLayout from './layouts/HomepageLayout'
 import Login from './pages/Login/Login'
+import Recovery from './pages/Recovery'
 import Homepage from './pages/Homepage'
 import Registration from './pages/Registration'
 import { ToastContainer } from 'react-toastify'
@@ -58,6 +59,11 @@ const App = () => {
           </MainLayout>
           :
           <Redirect to="/" />
+        )} />
+        <Route path='/recovery' render={() => (
+          <MainLayout>
+            <Recovery />
+          </MainLayout>
         )} />
       </Switch>
     </div>

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import FormInput from '../forms/FormInput'
 import Button from '../forms/Button'
 import { auth, handleUserProfile } from '../../firebase/config'
+import AuthWrapper from '../../components/AuthWrapper'
 import './styles.scss'
 
 const Signup = () => {
@@ -49,48 +50,43 @@ const Signup = () => {
     }
 
     return (
-        <div className='signup'>
-            <div className="wrap">
-                <h2>
-                    Signup
-                </h2>
-                <div className="formWrap">
-                    <form onSubmit={e => handleFormSubmit(e)}>
-                        <FormInput
-                            handleChange={e => handleChange(e)}
-                            type="text"
-                            name="displayName"
-                            value={displayName}
-                            placeholder="Full Name"
-                        />
-                        <FormInput
-                            handleChange={handleChange}
-                            type="email"
-                            name="email"
-                            value={email}
-                            placeholder="Email"
-                        />
-                        <FormInput
-                            handleChange={handleChange}
-                            type="password"
-                            name="password"
-                            value={password}
-                            placeholder="Password"
-                        />
-                        <FormInput
-                            handleChange={handleChange}
-                            type="password"
-                            name="confirmPassword"
-                            value={confirmPassword}
-                            placeholder="Confirm Password"
-                        />
-                        <Button type='submit'>
-                            Register
+        <AuthWrapper headline='Register'>
+            <div className="formWrap">
+                <form onSubmit={e => handleFormSubmit(e)}>
+                    <FormInput
+                        handleChange={e => handleChange(e)}
+                        type="text"
+                        name="displayName"
+                        value={displayName}
+                        placeholder="Full Name"
+                    />
+                    <FormInput
+                        handleChange={handleChange}
+                        type="email"
+                        name="email"
+                        value={email}
+                        placeholder="Email"
+                    />
+                    <FormInput
+                        handleChange={handleChange}
+                        type="password"
+                        name="password"
+                        value={password}
+                        placeholder="Password"
+                    />
+                    <FormInput
+                        handleChange={handleChange}
+                        type="password"
+                        name="confirmPassword"
+                        value={confirmPassword}
+                        placeholder="Confirm Password"
+                    />
+                    <Button type='submit'>
+                        Register
                         </Button>
-                    </form>
-                </div>
+                </form>
             </div>
-        </div>
+        </AuthWrapper>
     )
 }
 
