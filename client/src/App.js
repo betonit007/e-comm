@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
 import { auth, handleUserProfile } from './firebase/config'
 import { Switch, Route, Redirect } from 'react-router-dom'
+import { setCurrentUser } from './redux/User/user.actions'
 //layouts
 import MainLayout from './layouts/MainLayout'
 import HomepageLayout from './layouts/HomepageLayout'
@@ -12,16 +14,16 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import './default.scss'
 
-const App = () => {
-  const [authState, setAuthState] = useState({ currentUser: null });
-  const { currentUser } = authState
+const App = (props) => {
+ 
+  const { currentUser, setCurrentUser } = props
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await handleUserProfile(userAuth)
         userRef.onSnapshot(snapshot => {
-          setAuthState({
+          setCurrentUser({
             currentUser: {
               id: snapshot.id,
               ...snapshot.data()
@@ -29,7 +31,7 @@ const App = () => {
           })
         })
       }
-      setAuthState({ currentUser: null })
+      setCurrentUser(userAuth) //should return null if user is not logged in
     })
     //clean up
     return () => unsubscribe()
@@ -43,7 +45,7 @@ const App = () => {
       />
       <Switch>
         <Route exact path='/' render={() => (
-          <HomepageLayout currentUser={currentUser}>
+          <HomepageLayout>
             <Homepage />
           </HomepageLayout>
         )} />
@@ -70,4 +72,12 @@ const App = () => {
   )
 }
 
-export default App
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser
+})
+
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
