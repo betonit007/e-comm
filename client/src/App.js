@@ -3,6 +3,10 @@ import { connect } from 'react-redux'
 import { auth, handleUserProfile } from './firebase/config'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { setCurrentUser } from './redux/User/user.actions'
+
+// hoc
+import WithAuth from './hoc/WithAuth'
+
 //layouts
 import MainLayout from './layouts/MainLayout'
 import HomepageLayout from './layouts/HomepageLayout'
@@ -11,11 +15,12 @@ import Recovery from './pages/Recovery'
 import Homepage from './pages/Homepage'
 import Registration from './pages/Registration'
 import { ToastContainer } from 'react-toastify'
+import Dashboard from './pages/Dashboard'
 import 'react-toastify/dist/ReactToastify.css';
 import './default.scss'
 
 const App = (props) => {
- 
+
   const { currentUser, setCurrentUser } = props
 
   useEffect(() => {
@@ -67,6 +72,14 @@ const App = (props) => {
             <Recovery />
           </MainLayout>
         )} />
+        <Route path='/dashboard' render={() => (
+          <WithAuth>
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          </WithAuth>
+        )} />
+
       </Switch>
     </div>
   )

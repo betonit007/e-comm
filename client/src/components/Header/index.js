@@ -23,6 +23,11 @@ const Header = ({ currentUser }) => {
                     {currentUser ?
                         <ul>
                             <li>
+                                <Link to='/dashboard'>
+                                    Account
+                               </Link>
+                            </li>
+                            <li>
                                 <p className='logout' onClick={
                                     () => {
                                         auth.signOut()

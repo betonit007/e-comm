@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { toast } from 'react-toastify'
 import FormInput from '../forms/FormInput'
 import Button from '../forms/Button'
@@ -6,7 +8,7 @@ import { auth, handleUserProfile } from '../../firebase/config'
 import AuthWrapper from '../../components/AuthWrapper'
 import './styles.scss'
 
-const Signup = () => {
+const Signup = props => {
 
     const [userInfo, setUserInfo] = useState({
         displayName: '',
@@ -15,14 +17,10 @@ const Signup = () => {
         confirmPassword: ''
     })
 
-    const handleChange = e => {
-        setUserInfo({
-            ...userInfo,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    const { displayName, email, password, confirmPassword } = userInfo
+    const [displayName, setDisplayName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
 
     const handleFormSubmit = async e => {
         e.preventDefault()
@@ -37,12 +35,12 @@ const Signup = () => {
             const { user } = await auth.createUserWithEmailAndPassword(email, password)
 
             await handleUserProfile(user, { displayName })
-            setUserInfo({
-                displayName: '',
-                email: '',
-                password: '',
-                confirmPassword: ''
-            })
+
+            setDisplayName("")
+            setEmail('')
+            setPassword('')
+            setConfirmPassword("")
+            props.history.push('/')
 
         } catch (err) {
             toast.error(err)
@@ -54,28 +52,28 @@ const Signup = () => {
             <div className="formWrap">
                 <form onSubmit={e => handleFormSubmit(e)}>
                     <FormInput
-                        handleChange={e => handleChange(e)}
+                        onChange={e => setDisplayName(e.target.value)}
                         type="text"
                         name="displayName"
                         value={displayName}
                         placeholder="Full Name"
                     />
                     <FormInput
-                        handleChange={handleChange}
+                        onChange={e => setEmail(e.target.value)}
                         type="email"
                         name="email"
                         value={email}
                         placeholder="Email"
                     />
                     <FormInput
-                        handleChange={handleChange}
+                        onChange={e => setPassword(e.target.value)}
                         type="password"
                         name="password"
                         value={password}
                         placeholder="Password"
                     />
                     <FormInput
-                        handleChange={handleChange}
+                        onChange={e => setConfirmPassword(e.target.value)}
                         type="password"
                         name="confirmPassword"
                         value={confirmPassword}
@@ -90,4 +88,4 @@ const Signup = () => {
     )
 }
 
-export default Signup
+export default withRouter(Signup)

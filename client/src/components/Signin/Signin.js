@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import {withRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import Button from '../forms/Button/index'
 import { signInWithGoogle, auth } from '../../firebase/config'
@@ -7,32 +8,26 @@ import './styles.scss'
 import { toast } from 'react-toastify'
 import AuthWrapper from '../../components/AuthWrapper'
 
-const Signin = () => {
+const Signin = (props) => {
 
-    const [userInfo, setUserInfo] = useState({
-        email: '',
-        password: '',
-    })
-
-    const { email, password } = userInfo
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
 
     const googleSignin = async (e) => {
         e.preventDefault()
         signInWithGoogle()
     }
 
-    const handleChange = e => {
-        setUserInfo({
-            ...userInfo,
-            [e.target.name]: e.target.value
-        })
-    }
 
     const handleSubmit = async e => {
         e.preventDefault()
 
         try {
             await auth.signInWithEmailAndPassword(email, password)
+            setEmail('')
+            setPassword('')
+            props.history.push('/')
+            
         } catch (error) {
 
             toast.error(error.message)
@@ -44,14 +39,14 @@ const Signin = () => {
             <div className="formWrap">
                 <form onSubmit={e => handleSubmit(e)}>
                     <FormInput
-                        onChange={handleChange}
+                        onChange={e=>setEmail(e.target.value)}
                         type="email"
                         name="email"
                         value={email}
                         placeholder="Email"
                     />
                     <FormInput
-                        onChange={handleChange}
+                        onChange={e=>setPassword(e.target.value)}
                         type="password"
                         name="password"
                         value={password}
@@ -81,4 +76,4 @@ const Signin = () => {
     )
 }
 
-export default Signin
+export default withRouter(Signin)
