@@ -1,50 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { toast } from 'react-toastify'
+import { signUpUser, resetAllAuthForms } from '../../redux/User/user.actions'
 import FormInput from '../forms/FormInput'
 import Button from '../forms/Button'
-import { auth, handleUserProfile } from '../../firebase/config'
 import AuthWrapper from '../../components/AuthWrapper'
 import './styles.scss'
 
+const mapState = ({user}) => ({
+  signUpSuccess: user.signUpSuccess,
+  signUpError: user.signUpError
+})
+
 const Signup = props => {
-
-    const [userInfo, setUserInfo] = useState({
-        displayName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    })
-
+    const dispatch = useDispatch()
+    const { signUpError, signUpSuccess} = useSelector(mapState)
     const [displayName, setDisplayName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
+    
+    useEffect(() => {
+      if (signUpSuccess) {
+        setDisplayName("")
+        setEmail('')
+        setPassword('')
+        setConfirmPassword("")
+        dispatch(resetAllAuthForms())
+        props.history.push('/')
+      }
+    }, [signUpSuccess])
+
 
     const handleFormSubmit = async e => {
         e.preventDefault()
-        console.log('here')
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match")
-            return
-        }
-
-        try {
-
-            const { user } = await auth.createUserWithEmailAndPassword(email, password)
-
-            await handleUserProfile(user, { displayName })
-
-            setDisplayName("")
-            setEmail('')
-            setPassword('')
-            setConfirmPassword("")
-            props.history.push('/')
-
-        } catch (err) {
-            toast.error(err)
-        }
+        dispatch(signUpUser({
+            displayName,
+            email,
+            password,
+            confirmPassword
+        }))
     }
 
     return (

@@ -1,37 +1,41 @@
-import React, { useState } from 'react'
-import {withRouter} from 'react-router-dom'
-import {Link} from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Button from '../forms/Button/index'
-import { signInWithGoogle, auth } from '../../firebase/config'
 import FormInput from '../forms/FormInput'
 import './styles.scss'
-import { toast } from 'react-toastify'
 import AuthWrapper from '../../components/AuthWrapper'
+import { signInUser, signInWithGoogle, resetAllAuthForms } from '../../redux/User/user.actions'
+
+const mapState = ({ user }) => ({
+    signInSuccess: user.signInSuccess
+})
 
 const Signin = (props) => {
-
+    const { signInSuccess } = useSelector(mapState)
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const googleSignin = async (e) => {
-        e.preventDefault()
-        signInWithGoogle()
-    }
+    useEffect(() => {
+        if (signInSuccess) {
+            setEmail('')
+            setPassword('')
+            dispatch(resetAllAuthForms())
+            props.history.push('/')
+        }
+    }, [signInSuccess])
 
 
     const handleSubmit = async e => {
         e.preventDefault()
+        dispatch(signInUser({ email, password }))
+    }
 
-        try {
-            await auth.signInWithEmailAndPassword(email, password)
-            setEmail('')
-            setPassword('')
-            props.history.push('/')
-            
-        } catch (error) {
-
-            toast.error(error.message)
-        }
+    const handleGoogleSignIn = (e) => {
+        e.preventDefault()
+        dispatch(signInWithGoogle())
     }
 
     return (
@@ -39,14 +43,14 @@ const Signin = (props) => {
             <div className="formWrap">
                 <form onSubmit={e => handleSubmit(e)}>
                     <FormInput
-                        onChange={e=>setEmail(e.target.value)}
+                        onChange={e => setEmail(e.target.value)}
                         type="email"
                         name="email"
                         value={email}
                         placeholder="Email"
                     />
                     <FormInput
-                        onChange={e=>setPassword(e.target.value)}
+                        onChange={e => setPassword(e.target.value)}
                         type="password"
                         name="password"
                         value={password}
@@ -59,7 +63,7 @@ const Signin = (props) => {
                         <div className="row">
                             <Button
                                 style={{ backgroundColor: "#de5246" }}
-                                onClick={e => googleSignin(e)}
+                                onClick={e => handleGoogleSignIn(e)}
                             >
                                 Signin with Google
                                 </Button>
@@ -67,7 +71,7 @@ const Signin = (props) => {
                     </div>
                     <div className="links">
                         <Link to='/recovery'>
-                            Rest Password
+                            Reset Password
                         </Link>
                     </div>
                 </form>
