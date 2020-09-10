@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import {toast} from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { resetPassword, resetAllAuthForms } from '../../redux/User/user.actions'
+import { useHistory } from 'react-router-dom'
+import { resetPasswordStart, resetUserState } from '../../redux/User/user.actions'
 import AuthWrapper from '../AuthWrapper'
 import FormInput from '../forms/FormInput'
 import Button from '../forms/Button'
@@ -9,22 +10,24 @@ import './styles.scss'
 
 const mapState = ({ user }) => ({
     resetPasswordSuccess: user.resetPasswordSuccess,
-    
+    userErr: user.userErr
 })
 
-const EmailPassword = ({history}) => {
+const EmailPassword = () => {
     const {resetPasswordSuccess} = useSelector(mapState)
     const dispatch = useDispatch()
+    const history =  useHistory()
     const [email, setEmail] = useState('')
 
     const handleSubmit = e => {
         e.preventDefault()
-        dispatch(resetPassword({ email }))
+        dispatch(resetPasswordStart({ email }))
     }
     
     useEffect(() => {
       if(resetPasswordSuccess) {
-        dispatch(resetAllAuthForms())
+        toast("Password request sent. Please check your email.")
+        dispatch(resetUserState())
           history.push('/login')
       }
     }, [resetPasswordSuccess])
@@ -50,4 +53,4 @@ const EmailPassword = ({history}) => {
     )
 }
 
-export default withRouter(EmailPassword)
+export default EmailPassword

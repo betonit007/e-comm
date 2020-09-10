@@ -1,7 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { signOutUserStart } from '../../redux/User/user.actions'
 import { Link } from 'react-router-dom'
-import { auth } from '../../firebase/config'
 import { toast } from 'react-toastify'
 import './styles.scss'
 
@@ -14,6 +14,7 @@ const mapState = ({ user }) => ({
 
 
 const Header = () => {
+    const dispatch = useDispatch()
 
     const { currentUser } = useSelector(mapState)
 
@@ -38,7 +39,7 @@ const Header = () => {
                             <li>
                                 <p className='logout' onClick={
                                     () => {
-                                        auth.signOut()
+                                        dispatch(signOutUserStart())
                                         toast("You have successfully logged out.")
                                     }
                                 }

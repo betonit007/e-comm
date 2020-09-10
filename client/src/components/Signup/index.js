@@ -1,40 +1,40 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { signUpUser, resetAllAuthForms } from '../../redux/User/user.actions'
+import { useHistory } from'react-router-dom'
+import { signUpUserStart } from '../../redux/User/user.actions'
 import FormInput from '../forms/FormInput'
 import Button from '../forms/Button'
 import AuthWrapper from '../../components/AuthWrapper'
 import './styles.scss'
 
 const mapState = ({user}) => ({
-  signUpSuccess: user.signUpSuccess,
-  signUpError: user.signUpError
+  currentUser: user.currentUser,
+  useErr: user.userErr
 })
 
-const Signup = props => {
+const Signup = () => {
     const dispatch = useDispatch()
-    const { signUpError, signUpSuccess} = useSelector(mapState)
+    const history = useHistory()
+    const { currentUser, userErr} = useSelector(mapState)
     const [displayName, setDisplayName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     
     useEffect(() => {
-      if (signUpSuccess) {
+      if (currentUser) {
         setDisplayName("")
         setEmail('')
         setPassword('')
         setConfirmPassword("")
-        dispatch(resetAllAuthForms())
-        props.history.push('/')
+        history.push('/')
       }
-    }, [signUpSuccess])
+    }, [currentUser])
 
 
     const handleFormSubmit = async e => {
         e.preventDefault()
-        dispatch(signUpUser({
+        dispatch(signUpUserStart({
             displayName,
             email,
             password,
@@ -83,4 +83,4 @@ const Signup = props => {
     )
 }
 
-export default withRouter(Signup)
+export default Signup
