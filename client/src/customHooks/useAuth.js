@@ -1,16 +1,18 @@
 import {useEffect} from 'react'
 import { useSelector } from 'react-redux'; //allows us to map state from our react-redux store
+import { useHistory } from 'react-router-dom'
 
 const mapState = ({ user }) => ({
     currentUser: user.currentUser
 })
 
-const useAuth = props => {
+const useAuth = () => {
     const { currentUser } = useSelector(mapState);
+    const history = useHistory()
 
     useEffect(() => {
         if (!currentUser) {
-          props.history.push('/login')
+          history.push('/login')
         }
     },[currentUser])
 
