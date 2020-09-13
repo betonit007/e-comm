@@ -11,6 +11,10 @@ import WithAdminAuth from './hoc/withAdminAuth'
 //layouts
 import MainLayout from './layouts/MainLayout'
 import HomepageLayout from './layouts/HomepageLayout'
+import DashboardLayout from './layouts/DashboardLayout'
+import AdminLayout from './layouts/AdminLayout'
+
+//pages
 import Login from './pages/Login/Login'
 import Recovery from './pages/Recovery'
 import Homepage from './pages/Homepage'
@@ -18,6 +22,7 @@ import Registration from './pages/Registration'
 import { ToastContainer } from 'react-toastify'
 import Dashboard from './pages/Dashboard'
 import Admin from './pages/admin'
+
 import 'react-toastify/dist/ReactToastify.css';
 import './default.scss'
 
@@ -61,16 +66,16 @@ const App = (props) => {
         )} />
         <Route path='/admin' render={() => (
           <WithAdminAuth>
-            <MainLayout>
-              <Admin />
-            </MainLayout>
+              <AdminLayout>
+                <Admin />
+              </AdminLayout>
           </WithAdminAuth>
         )} />
         <Route path='/dashboard' render={() => (
           <WithAuth>
-            <MainLayout>
+            <DashboardLayout>
               <Dashboard />
-            </MainLayout>
+            </DashboardLayout>
           </WithAuth>
         )} />
 
