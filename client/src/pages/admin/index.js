@@ -1,12 +1,15 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Modal from '../../components/Modal'
 import FormInput from '../../components/forms/FormInput'
 import FormSelect from '../../components/forms/FormSelect'
 import Button from '../../components/forms/Button'
 import './styles.scss'
+import { addProductStart, fetchProductsStart, deleteProductStart } from '../../redux/products/products.actions'
 
 const Admin = (props) => {
 
+    const dispatch = useDispatch()
     const [hideModal, setHideModal] = useState(true);
     const [productCategory, setProductCategory] = useState('mens');
     const [productName, setProductName] = useState('');
@@ -15,6 +18,22 @@ const Admin = (props) => {
 
     const toggleModal = () => setHideModal(!hideModal)
 
+    const product = useSelector(state => state.productsData.product)
+    
+    useEffect(() => {
+      dispatch(
+          fetchProductsStart()
+      )
+    }, [])
+
+    const resetForm = () => {
+        setHideModal(true)
+        setProductCategory('mens')
+        setProductName('')
+        setProductThumbnail('')
+        setProductPrice(0)
+    }
+
     const configModal = {
         hideModal,
         toggleModal
@@ -22,6 +41,15 @@ const Admin = (props) => {
 
     const handleSubmit = e => {
         e.preventDefault()
+        dispatch(
+            addProductStart({
+                productCategory,
+                productName,
+                productThumbnail,
+                productPrice
+            })
+        )
+        resetForm()
     }
 
     return (
@@ -79,6 +107,54 @@ const Admin = (props) => {
                     </form>
                 </div>
             </Modal>
+            <div className="manageProducts">
+                <table border='0' cellPadding='0' cellSpacing='0'>
+                    <tbody>
+                        <tr>
+                            <th>
+                                <h1>Manage Products</h1>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table className='results' border='0' cellPadding='10' cellSpacing='0'>
+                                    <tbody>
+                                        {product.map((product, i) => {
+                                            const { 
+                                                productName,
+                                                productThumbnail,
+                                                productPrice,
+                                                documentID
+                                            } = product
+                                            return (
+                                                <tr key={i}>
+                                                    <td>
+                                                      <img className="thumb" src={productThumbnail}/>
+                                                    </td>
+                                                    <td>
+                                                        {productName}
+                                                    </td>
+                                                    <td>
+                                                        ${productPrice}
+                                                    </td>
+                                                    <td>
+                                                        <Button onClick={() => {
+                                                            
+                                                            dispatch(deleteProductStart(documentID))
+                                                        }}>
+                                                            Delete
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
