@@ -19,7 +19,7 @@ export const handleFetchProducts = () => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            const productsCollection = await firestore.collection('products').get()
+            const productsCollection = await firestore.collection('products').orderBy("createdDate").get()
             console.log(productsCollection.docs)
             const productsArray = productsCollection.docs.map(doc => {
                 return {

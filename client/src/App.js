@@ -22,6 +22,7 @@ import Registration from './pages/Registration'
 import { ToastContainer } from 'react-toastify'
 import Dashboard from './pages/Dashboard'
 import Admin from './pages/admin'
+import Search from './pages/Search'
 
 import 'react-toastify/dist/ReactToastify.css';
 import './default.scss'
@@ -47,6 +48,11 @@ const App = (props) => {
             <Homepage />
           </HomepageLayout>
         )} />
+        <Route exact path='/search' render={() => (
+          <MainLayout>
+            <Search />
+          </MainLayout>
+        )} />
         <Route exact path='/registration' render={() => (
           <MainLayout>
             <Registration />
@@ -66,9 +72,9 @@ const App = (props) => {
         )} />
         <Route path='/admin' render={() => (
           <WithAdminAuth>
-              <AdminLayout>
-                <Admin />
-              </AdminLayout>
+            <AdminLayout>
+              <Admin />
+            </AdminLayout>
           </WithAdminAuth>
         )} />
         <Route path='/dashboard' render={() => (
