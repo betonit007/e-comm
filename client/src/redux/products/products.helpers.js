@@ -15,12 +15,18 @@ export const handleAddProduct = product => {
     })
 }
 
-export const handleFetchProducts = () => {
+export const handleFetchProducts = ({payload: { filterType }}) => {
+    console.log('filterType', filterType)
     return new Promise(async (resolve, reject) => {
+
+
+        let ref = firestore.collection('products').orderBy("createdDate")
+       if (filterType) ref = ref.where('productCategory', '==', filterType)
+
         try {
 
-            const productsCollection = await firestore.collection('products').orderBy("createdDate").get()
-            console.log(productsCollection.docs)
+            const productsCollection = await ref.get()
+            console.log(productsCollection)
             const productsArray = productsCollection.docs.map(doc => {
                 return {
                     ...doc.data(),

@@ -3,7 +3,7 @@ import './styles.scss';
 
 const FormSelect = ({ options, defaultValue, handleChange, label, ...otherProps }) => {
   if (!Array.isArray(options) || options.length < 1) return null;
-
+  console.log('formSelect default', defaultValue)
   return (
     <div className="formRow">
       {label && (
