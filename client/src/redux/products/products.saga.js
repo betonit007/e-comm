@@ -33,7 +33,7 @@ export function* onAddProductStart() {
 }
 
 export function* fetchProducts({ payload }) {
-    console.log('fetchProducts saga,', payload)
+    
   try {
       const products = yield handleFetchProducts({ payload });
       yield put(

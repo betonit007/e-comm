@@ -6,8 +6,9 @@ import FormSelect from '../../components/forms/FormSelect'
 import Button from '../../components/forms/Button'
 import './styles.scss'
 import { addProductStart, fetchProductsStart, deleteProductStart } from '../../redux/products/products.actions'
+import LoadMore from '../../components/LoadMore'
 
-const Admin = (props) => {
+const Admin = () => {
 
     const dispatch = useDispatch()
     const [hideModal, setHideModal] = useState(true);
@@ -18,12 +19,12 @@ const Admin = (props) => {
 
     const toggleModal = () => setHideModal(!hideModal)
 
-    const product = useSelector(state => state.productsData.product)
-    
+    const { data, queryDoc, isLastPage } = useSelector(state => state.productsData.product)
+    console.log(data)
     useEffect(() => {
-      dispatch(
-          fetchProductsStart()
-      )
+        dispatch(
+            fetchProductsStart()
+        )
     }, [])
 
     const resetForm = () => {
@@ -52,12 +53,21 @@ const Admin = (props) => {
         resetForm()
     }
 
+    const handleLoadMore = () => {
+        dispatch(
+            fetchProductsStart({
+                startAfterDoc: queryDoc,
+                persistProducts: data
+            })
+        )
+    }
+
     return (
         <div className='admin'>
             <div className="callToActions">
                 <ul>
                     <li>
-                        <Button style={{padding: '10px'}} onClick={() => toggleModal()}>
+                        <Button style={{ padding: '10px' }} onClick={() => toggleModal()}>
                             Add new Product
                         </Button>
                     </li>
@@ -73,36 +83,36 @@ const Admin = (props) => {
                                 value: "mens",
                                 name: "Mens"
                             }, {
-                                value:"womens",
+                                value: "womens",
                                 name: "Womens"
                             }]}
                             handleChange={e => setProductCategory(e.target.value)}
                         />
 
                         <FormInput
-                          label="Name"
-                          type='text'
-                          value={productName}
-                          handleChange={e=>setProductName(e.target.value)}
-                         />
-                          <FormInput
-                          label="Main Page URL"
-                          type='url'
-                          value={productThumbnail}
-                          handleChange={e=>setProductThumbnail(e.target.value)}
-                         />
-                          <FormInput
-                          label="Price"
-                          type='number'
-                          min='0.00'
-                          max='10000.00'
-                          step='0.01'
-                          value={productPrice}
-                          handleChange={e=>setProductPrice(e.target.value)}
-                         />
+                            label="Name"
+                            type='text'
+                            value={productName}
+                            handleChange={e => setProductName(e.target.value)}
+                        />
+                        <FormInput
+                            label="Main Page URL"
+                            type='url'
+                            value={productThumbnail}
+                            handleChange={e => setProductThumbnail(e.target.value)}
+                        />
+                        <FormInput
+                            label="Price"
+                            type='number'
+                            min='0.00'
+                            max='10000.00'
+                            step='0.01'
+                            value={productPrice}
+                            handleChange={e => setProductPrice(e.target.value)}
+                        />
 
-                         <Button type="submit">
-                             Add Product
+                        <Button type="submit">
+                            Add Product
                          </Button>
                     </form>
                 </div>
@@ -119,8 +129,8 @@ const Admin = (props) => {
                             <td>
                                 <table className='results' border='0' cellPadding='10' cellSpacing='0'>
                                     <tbody>
-                                        {product.map((product, i) => {
-                                            const { 
+                                        {(Array.isArray(data) && data) && data.map((product, i) => {
+                                            const {
                                                 productName,
                                                 productThumbnail,
                                                 productPrice,
@@ -129,7 +139,7 @@ const Admin = (props) => {
                                             return (
                                                 <tr key={i}>
                                                     <td>
-                                                      <img className="thumb" src={productThumbnail}/>
+                                                        <img className="thumb" src={productThumbnail} />
                                                     </td>
                                                     <td>
                                                         {productName}
@@ -139,7 +149,7 @@ const Admin = (props) => {
                                                     </td>
                                                     <td>
                                                         <Button onClick={() => {
-                                                            
+
                                                             dispatch(deleteProductStart(documentID))
                                                         }}>
                                                             Delete
@@ -148,12 +158,16 @@ const Admin = (props) => {
                                                 </tr>
                                             )
                                         })}
+
                                     </tbody>
                                 </table>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div style={{ margin: '10px 0' }}>
+                                    { !isLastPage && <LoadMore handleLoadMore={handleLoadMore} /> }
             </div>
         </div>
     )

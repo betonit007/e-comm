@@ -1,4 +1,5 @@
 import { firestore } from '../../firebase/config'
+import { getSnapShotFromUserAuth } from '../User/user.sagas'
 
 export const handleAddProduct = product => {
     return new Promise((resolve, reject) => {
@@ -15,26 +16,31 @@ export const handleAddProduct = product => {
     })
 }
 
-export const handleFetchProducts = ({payload: { filterType }}) => {
-    console.log('filterType', filterType)
+export const handleFetchProducts = ({ payload: { filterType, startAfterDoc, persistProducts=[] } }) => {
+    const countSize = 6
     return new Promise(async (resolve, reject) => {
 
 
-        let ref = firestore.collection('products').orderBy("createdDate")
-       if (filterType) ref = ref.where('productCategory', '==', filterType)
+        let ref = firestore.collection('products').orderBy("createdDate").limit(countSize)
+        if (filterType) ref = ref.where('productCategory', '==', filterType)
+        if (startAfterDoc) ref = ref.startAfter(startAfterDoc)
 
         try {
 
             const productsCollection = await ref.get()
-            console.log(productsCollection)
-            const productsArray = productsCollection.docs.map(doc => {
+            const totalCount = productsCollection.size
+            const data = [...persistProducts, ...productsCollection.docs.map(doc => {
                 return {
                     ...doc.data(),
                     documentID: doc.id
                 }
             })
-            console.log(productsArray)
-            resolve(productsArray)
+            ]
+            resolve({
+                data,
+                queryDoc: productsCollection.docs[totalCount - 1],
+                isLastPage: totalCount < 1
+            })
 
         } catch (error) {
             console.log(error)
@@ -64,7 +70,7 @@ export const handleFetchProducts = ({payload: { filterType }}) => {
 export const handleDeleteProduct = documentID => {
 
     return new Promise(async (resolve, reject) => {
-        
+
         try {
             await firestore.collection('products').doc(documentID).delete()
             resolve()
@@ -72,6 +78,6 @@ export const handleDeleteProduct = documentID => {
             console.log(err)
             reject(err)
         }
-       
+
     })
 }
